@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FLORA - 臺灣特有種植物誌 (進階地圖與快搜版)</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        html { scroll-behavior: smooth; }
+        :root {
+            --color-bg: #0e0d0b;
+            --color-surface: #181613;
+            --color-gold: #dfba73;
+            --font-serif: "Times New Roman", "Noto Serif TC", serif;
+        }
+        body { font-family: "PingFang TC", "Microsoft JhengHei", sans-serif; background-color: var(--color-bg); color: #e0e0e0; padding-top: 80px; }
+        .tag-navbar { background-color: rgba(14, 13, 11, 0.85); box-shadow: 0 1px 0px rgba(255,255,255,0.05); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); z-index: 1030; }
+        .nav-home-btn { border: 1px solid rgba(255,255,255,0.2); color: #ffffff; font-size: 0.8rem; letter-spacing: 1px; transition: all 0.3s; }
+        .nav-home-btn:hover { border-color: var(--color-gold); color: var(--color-gold); background: transparent; }
+        .map-section { background-color: var(--color-surface); border: 1px solid rgba(255, 255, 255, 0.05); padding: 30px; margin-bottom: 40px; box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
+        .map-box { background: radial-gradient(circle, #211e18 0%, #0e0d0b 100%); height: 280px; border: 1px dashed rgba(223, 186, 115, 0.3); display: flex; align-items: center; justify-content: center; position: relative; }
+        .map-dot { position: absolute; width: 14px; height: 14px; background-color: var(--color-gold); border-radius: 50%; cursor: pointer; box-shadow: 0 0 10px var(--color-gold); animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.4); opacity: 0.5; } 100% { transform: scale(1); opacity: 1; } }
+        .region-btn { background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.1); padding: 10px 20px; transition: all 0.3s; width: 100%; }
+        .region-btn.active, .region-btn:hover { background: var(--color-gold); color: var(--color-bg); border-color: var(--color-gold); font-weight: bold; }
+        .filter-sidebar { background-color: var(--color-surface); border: 1px solid rgba(255,255,255,0.05); padding: 25px; position: sticky; top: 100px; }
+        .filter-title { font-size: 0.95rem; color: var(--color-gold); letter-spacing: 1px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px; margin-bottom: 12px; font-weight: bold; }
+        .form-check-input:checked { background-color: var(--color-gold); border-color: var(--color-gold); }
+        .plant-section { background-color: var(--color-surface); border: 1px solid rgba(255, 255, 255, 0.03); padding: 40px; margin-bottom: 40px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); scroll-margin-top: 100px; }
+        .img-container { overflow: hidden; }
+        .plant-img { width: 100%; height: 300px; object-fit: cover; filter: grayscale(15%) sepia(8%); transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1); }
+        .plant-section:hover .plant-img { filter: grayscale(0%) sepia(0%); transform: scale(1.02); }
+        .status-badge { font-size: 0.7rem; letter-spacing: 1px; padding: 3px 10px; background-color: rgba(223, 186, 115, 0.1) !important; color: var(--color-gold); border: 1px solid rgba(223, 186, 115, 0.3); border-radius: 2px; text-transform: uppercase; display: inline-block; }
+        .plant-title-link { text-decoration: none; color: #ffffff; font-size: 1.8rem; font-weight: 600; display: inline-flex; align-items: center; gap: 10px; transition: color 0.3s; margin-top: 8px; }
+        .plant-title-link:hover { color: var(--color-gold); }
+        .video-hint { font-size: 0.75rem; color: rgba(255,255,255,0.4); font-weight: 400; border-bottom: 1px solid rgba(255,255,255,0.2); }
+        .scientific-name { font-family: var(--font-serif); color: rgba(255,255,255,0.4); font-size: 1.05rem; margin-bottom: 20px; }
+        .meta-box { border-left: 2px solid var(--color-gold); padding-left: 15px; margin-bottom: 15px; }
+        .meta-label { font-size: 0.75rem; color: var(--color-gold); display: block; margin-bottom: 2px; }
+        .features-text { color: rgba(255,255,255,0.7); line-height: 1.8; font-size: 0.95rem; text-align: justify; }
+        footer { background-color: #0b0a09; color: rgba(255,255,255,0.2); padding: 30px 0; font-size: 0.8rem; margin-top: 60px; }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg fixed-top tag-navbar py-3">
+        <div class="container px-3">
+            <a class="btn nav-home-btn rounded-0" href="index.html">← ARCHIVE</a>
+            <span class="navbar-brand text-success fw-bold ms-3" style="color: var(--color-gold) !important;">FLORA / 植物地理誌</span>
+        </div>
+    </nav>
+
+    <section class="container mt-4">
+        <div class="map-section">
+            <div class="row g-4 align-items-center">
+                <div class="col-md-5">
+                    <h5 class="fw-bold text-white mb-2" style="font-family: var(--font-serif);">BOTANICAL DISTRIBUTION</h5>
+                    <p class="text-white-50 small mb-4">點擊下方垂直林帶分區，觀看植物林相數據與宣導事項：</p>
+                    <div class="row g-2">
+                        <div class="col-6"><button class="btn region-btn text-start active" onclick="filterRegion('all', this)">🌐 顯示全島植物</button></div>
+                        <div class="col-6"><button class="btn region-btn text-start" onclick="filterRegion('high', this)">🏔️ 高山寒帶主稜</button></div>
+                        <div class="col-6"><button class="btn region-btn text-start" onclick="filterRegion('mid', this)">🌲 中海拔雲霧帶</button></div>
+                        <div class="col-6"><button class="btn region-btn text-start" onclick="filterRegion('low', this)">🌿 溪谷與低海拔</button></div>
+                    </div>
+                </div>
+                <div class="col-md-7">
+                    <div class="map-box rounded">
+                        <div id="map-info-panel" class="p-4 text-center">
+                            <h6 class="fw-bold" style="color: var(--color-gold);" id="panel-title">台灣特有植物分佈面板</h6>
+                            <p class="small text-white-50 mb-0" id="panel-desc">點選左側垂直海拔高度帶，系統將載入對應之植感垂直分佈數據與保育警示。</p>
+                            <div class="alert alert-warning small mt-3 bg-dark text-warning border-warning py-1 mb-0" id="panel-alert">
+                                📢 宣導：森林為全島之肺，入山請落實無痕山林，嚴禁任意採摘任何野生植物。
+                            </div>
+                        </div>
+                        <div class="map-dot" style="top: 35%; left: 52%;"></div>
+                        <div class="map-dot" style="top: 60%; left: 45%;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-lg-3">
+                <div class="filter-sidebar rounded">
+                    <h6 class="fw-bold text-white mb-3" style="font-family: var(--font-serif);">DYNAMIC FILTER</h6>
+                    
+                    <div class="mb-4">
+                        <div class="filter-title">關鍵字搜尋 (SEARCH)</div>
+                        <div class="input-group">
+                            <input type="text" id="keyword-search" class="form-control bg-dark text-white border-secondary small" placeholder="輸入名稱、學名或特徵..." onkeyup="filterPlants()" style="font-size: 0.85rem;">
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <div class="filter-title">保育等級 (STATUS)</div>
+                        <div class="form-check mb-2"><input class="form-check-input filter-checkbox" type="checkbox" value="瀕臨絕種" id="p1" onchange="filterPlants()"><label class="form-check-label small text-white-50" for="p1">瀕臨絕種</label></div>
+                        <div class="form-check mb-2"><input class="form-check-input filter-checkbox" type="checkbox" value="珍貴稀有" id="p2" onchange="filterPlants()"><label class="form-check-label small text-white-50" for="p2">珍貴稀有</label></div>
+                        <div class="form-check mb-2"><input class="form-check-input filter-checkbox" type="checkbox" value="一般野生" id="p3" onchange="filterPlants()"><label class="form-check-label small text-white-50" for="p3">一般野生</label></div>
+                    </div>
+                    <div>
+                        <div class="filter-title">植物型態 (MORPHOLOGY)</div>
+                        <div class="form-check mb-2"><input class="form-check-input filter-checkbox" type="checkbox" value="喬木" id="m1" onchange="filterPlants()"><label class="form-check-label small text-white-50" for="m1">高聳喬木 / 針葉林</label></div>
+                        <div class="form-check mb-2"><input class="form-check-input filter-checkbox" type="checkbox" value="草本" id="m2" onchange="filterPlants()"><label class="form-check-label small text-white-50" for="m2">高山草本 / 珍稀蘭花</label></div>
+                        <div class="form-check mb-2"><input class="form-check-input filter-checkbox" type="checkbox" value="蕨類" id="m3" onchange="filterPlants()"><label class="form-check-label small text-white-50" for="m3">古老真蕨 / 附生類</label></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-9" id="plant-list-container"></div>
+        </div>
+    </div>
+
+    <footer class="text-center"><p class="mb-0">© 2026 FORMOSA ARCHIVE. BOTANICAL RESEARCH CENTER.</p></footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const plants = [
+            { id: "cypress", name: "台灣紅檜", status: "珍貴稀有", typeTag: "喬木", region: "mid", scientific: "Chamaecyparis formosensis", habitat: "中央山脈中海拔雲霧帶森林", features: "極其高聳且長壽的針葉國寶樹。高山林間宏偉的「神木群」多屬此物種。其木質綿密、帶著一抹沉穩內斂的獨特馨香，見證了海島數千年的地質歲月。", image: "https://www.newsmarket.com.tw/files/2020/05/%E7%B4%85%E6%AA%9C%E5%A4%A7%E6%A8%B9%E4%BB%B0%E8%A7%92-%E8%AC%9D%E4%BD%B3%E5%80%AB%E6%94%9D%E6%98%A5%E5%B1%B1%E5%87%BA%E7%89%88%E7%A4%BE%E6%8F%90%E4%BE%9B.jpg", videoUrl: "https://www.youtube.com/results?search_query=台灣紅檜+紀錄片" },
+            { id: "orchid", name: "台灣一葉蘭", status: "珍貴稀有", typeTag: "草本", region: "mid", scientific: "Pleione formosana", habitat: "中海拔潮濕陡峭之碎屑岩壁", features: "高山深谷間驚艷綻放的傲骨幽蘭。每株僅偏執地抽出一片孤葉、供養一朵粉紫花卉。阿里山與溪頭陡峭的落葉岩壁上，方能尋得其絕美孤高的芳蹤。", image: "data:image/jpeg;base64,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", videoUrl: "https://www.youtube.com/results?search_query=台灣一葉蘭+紀錄片" },
+            { id: "sassafras", name: "台灣檫樹", status: "珍貴稀有", typeTag: "喬木", region: "mid", scientific: "Sassafras randaiense", habitat: "親海拔向陽山坡與林緣開闊地", features: "極度珍稀的冰河孑遺植物。在遠古演化史中倖存至今，它更是絕滅邊緣的國寶級昆蟲「寬尾鳳蝶」幼蟲唯一採食的宿主。其存續直接關乎一個史前蝶種的存亡。", image: "https://e-info.org.tw/images/d712cf3a-9c69-433a-a7a4-d1c15b5b3cfd.jpg", videoUrl: "https://www.youtube.com/results?search_query=台灣檫樹+紀錄片" },
+            { id: "rhododendron", name: "玉山杜鵑", status: "一般野生", typeTag: "草本", region: "high", scientific: "Rhododendron pseudochrysanthum", habitat: "三千公尺以上高山寒帶主稜碎石坡", features: "傲立於風雪寒原的強韌灌木。葉片反捲、覆滿革質以抵禦強烈輻射與暴風。每年初夏，群花競相盛開，將森冷荒涼的玉山主峰稜線渲染成波瀾壯闊的粉白花海。", image: "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBxITEhUTEhMVFhUXGBoXGBgYGBgYFxoaGBgXGBcXGBgYHSggGBolHRcVITEhJSkrLi4uFx8zODMtNygtLisBCgoKDg0OGxAQGy0lHyUtLS0tLS0tLS0tKy0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLf/AABEIAMIBAwMBIgACEQEDEQH/xAAcAAABBQEBAQAAAAAAAAAAAAAEAAIDBQYBBwj/xAA/EAABAwIEAwUGBAQGAQUAAAABAAIRAyEEEjFBBVFhBiJxgZETMqGxwfAHQlLRFBWC4SMzYnKS8cIkQ2Oisv/EABkBAAMBAQEAAAAAAAAAAAAAAAABAgMEBf/EACMRAAICAgMAAgMBAQAAAAAAAAABAhEhMQMSQRNRIjJhFAT/2gAMAwEAAhEDEQA/AMaDdROKgdiY0TfaG0ryqFZJVqkNJ1QrKhunV6+ZsRHPqhHOhbKNICVtQ7Kbum5bfnKGY5FNIUSwIc9xdbRdyHdRvKTXyooglaQbix3jQ+I3Se6eg6If2kFOaSUUBO1yKw9IugMuSdOqEprV9gMO19d4i4pkj/k0EjyRCHaSiMlwP4fio5tXE1DYtPs2gQQDMOJ1B0MKm452Uq4Wu6qGD2LnuLCLgB0kNI/LGnkvU6dEtKPfhswLXAFpEEHcHUL0nwrp1Qzx/B8Oq1RLabnDnYD/AJGAnY7s7XpNzFndGuUh0eMfNenVsG1pAa0NaBAHIDQIfilX2eHqua0E5HWO9jM8x0WH+SMY7A8ic1Z3iNbM8x4ei0tbQ9AsnU1WX/P6wO0MOXkNG62GAoimBlsGi5VNw3LTbLrF3yUOL4i95IZOXpv4p8nbklS0gsN4p2gc8lrYyaSJBKpalcnc+qOwnB3vi4aDz19FY4bs+2YcSfkq7QiOmyhoYh7T3CfAXB8RurWhjX2JpOaRo5gI9WmxV9hqFOm73fCAp8RUzGyiXMq0HQCpcSa/uucLzIcC2fJyix3CKb2RTa1jtiNPAo11IEQ4AjkRKYMGwe6C3/aSPlZYd82sFUVOCwb6VQB4sbSLg767FXxJiEHiZAj2rb7PifUfshKPFA85Q9oeLd73Xf7XaeqqSc8iWCyrsim7bulZQAT05/2Wiq45zWnOwyNRzB3bzVEawc4ltun0WnDFpMGEYMRUHUEeP3CvsFIvzt6KnoR3XREESPmfBXdIW0U8oo7CQ5vVdQxYeaS5yyitKjr1S4wNE6sYCh0uuqMfSaOPcIUDLynVnHZcY1XITESQugjmQpXBQOapWRBIMjVMNlC1xCmY5TVCoUqaieageutKTVjNN2b7POxRcc2RjYBdEyT+UDwv0tzWw4X2QFCqyrRqPzsMw4gBwIhzZAGUwTBuNFD+Gjpwr7C1U/FlPVal1R21oXZw8UeqfoFs3DyA6CJ5x56bqVjfyu20P0VZgMflMO0PwP7K0e/Qm42vbyXUhJZFiKLXgWgqlxuHDszSJBBBHQiFdkNcJCGr0o21QxtUeAcdrHDvdSgEgubfpoVnsLQdUdYdSVq+2nDC/iWJBs0ObAFz/lsNlUV8rKbmstt1lcDqH4xAioUDVcS6zRYBXeEpNaLCPBZCniajPdcdfELSYDGS0OIIWfNxyWfBrDDskG1x8VLRq7KGlWBN7Fdpuveywdo0JahuU1nRRYqu1gJcdFQY/jBe0ta2J3m/9kQ4pT0S3Rb4jj9NkgAucDEaadVnsTxOo8klxE7AkDwQzW6kpsjku2HFGOidjw4nqU40X/pPorThuPa17Tla0DkFpjwSri25qWUMY1znPNgSBOQEe875b7S023VC8Mtg+I1qTcpGamfyPEj+ndvkj6v8PWAF6NURGbQxyd+8Jg9n7Lv66zuOgVdRxrjUa0AODiGw4TaY8lP7ZQUXVHC1Wd2p3mxZzbx48wrVlcQASBZV+Kqfw9mktH6XSWeU3Hkq52JbX90im/QNJsegdzWDi55Y7rRpBVb+pvqksRUbUBIIdI8UlXwIXZhDnvde1k8VFCSpaEea0eCiSk0xfVPDV1qcRZYtiOSl7OVC5yka5OhDSxMNlteFdjH1WUqjqjWioJIg5g0glpB0cTa1ondUvaHs5WwzjLS6ntUaDl/q1ynx+KvpKraGU5Vn2f4QcTXZREwTLnATlYLuPjsOpCqqzi0aLTfhvx0MxLqREe2aACf1NkhvnJ8wE4cbtXok9V4dg6WHptp0WhjG7bk7kncnmUQ7Kb6fJR0O+NRO/wBEwtgwu0omyN3A8kZh6eUHLcHzjr4KvY+EfhKzBeY5hNMGEU9ZGu4+9VNjaQLc1yBe3LcJtWhLZaQR01HiOSiw2NIOV/31TbGnaPnvjdZ38ViC90OdWde/dGYgC22WB5KlxVJwOoPgtv8Aib2edhsaXtk0sQS5vR/52z5gjoeiybsI7dpHquRvq8kFayhm015IvhoLXw6dICJoUw13enrz9FY4vCZSHMIIImeoTlJODBbGtBuhsZxEs6uNgjnP7kkweSq5BqZpkRAPLquaKT3o1kwDGVqr/wDMNuWgQ7RrCvKzWVGhrRJBIEaX3T8NwSGPJFwBZdkY4wZNlfhOGOeYNuvRVdRkOI1gkfGFrq9IGkTnDDFtudvkivwu7Nur4kYiow+xo94FwOV9T8oBNnRdxjSG81XXwcTQ9kOwdJlJtTFMFSo5oOR/uMBuBl3dzJ02W1w1GnSaA1gaxujWiBrMADS6JqkE3+4+wh6t1aVAzyr8WsOGYim9sAVGEkAR3mmCfQt9Fg2PggjUGVqO3vGxi8UGt/y6UsaeZnvu8CQAOgHNZ2vRyuI5KHVjstRxp5gPIcItImyCxeJY8zkA8LfBLD4F9Udxpdlsek3RmC4E5x7+Zvl8josH8cHsSI6XFagAAqOt0B+JSRVTgjJOVziOZy/uuJXxgQNpTdSsppUQp45rOTKGMaVIUmp8LJsQMRK5kjROcPJMyEqhHr3YziNOvhKYB79MNY8bgtEAxyIi/jyWjpzGkheZ9heDvLhiBVdTa0loygS6wJBJtluNj8F6jQxTYvbqNF38UnKNsZn+M9jsHiQZp+zedHs7pnq33XeYWB4v+HOKoEPogYhovLO7UEaHKdf6ST0XtHsxrY+H76JpAEdROypxTH1s807G9p6of7HFE5iQ1stPtQeVQAT5m/Pmt3VbInl92RvsqRdmhhdETEPjWCdY0suVnMhpaLbw6QfA3TQqaK1OCuG8JY9uZjyAecGDyMRCrcVgn0/eFuYuP7JDH4d72HMJR769OqLwx/PY/sqMuITQ4lKwF2v4e3FYf2LyA9r2ua4jNESHaay1xHoqjgnZ+hhhLAXP0LnXPkNGjw8yVetprppIUfXsVAzaYcZcAY0JAJHmnV+E06jYexrh1APz0PVF0aIAKc1iqhmL41+HVKpLqNR1J8RBl7PQ3HkV5zxvgGIwtT2b4c4iW5b5hzA1XvoB8VXdoODU8VSNJ8NJ918S5h/U3kfNRLjTWBHhXCsQWPAqNyht5gggz8fBek8L4TVxXfbSNNjh7zwWz4NIkjyjqthwbs5hqDAGtNVzY/xKpzvJ6EiG/wBICuhBEhVCNCo8/p/hhhi4Or1atTmxsMYRyOro8CFsHCwYwBrWgAAaADQDon4qoZIbEfPxQNR5Op8hYKhk5a3d09Bdecdu+1dQGrhqLH08pyVHmMxkAgMgnKCCDOt9l6Dh45Lz/wDEBjqWMzOpNc2tTBn8zskMLeUgZTpupehM89oYKHAxaQpOJ0O+CNx8lrGNbWonKwNLTAn3o2nzVXUwoY0Pft8EqIbIOyr8pqMO8O+h+i0DTyWdwHFWB8FrRNpGuuhR+J4tTa2cwN47tyvM/wCjjcuTBpF4LABdWePaFnJ3wXVl/m5B2cos1T/ZrjQfBOzrpm7BiEBdc/oonPUedRQjpcusTFLTTYj0nsK7/wBI4HT2jhH9LCrz2ztJgclWdiaOXBtJ/M5zh4e7/wCJVyQ1d/HiCGSYcAbkeBhGDECwg25klBMrN0Go1E6eKBbj6v8AFeza0BuUHvfmG5aYsRyPJOUkjSKb0X7RMEW6jXrPPRdrOlQe0/6Fz+ylJtc+WpTslkmCxRpuv7p1/dG4viFN1gc3lb46qke4nwTqYViJ6QAJiw/unPpuc7Tw5JhTxbcygQ/+HjUpDKTA15rmY/8Ad0PUcAS5mu/Ux9beiiUqKSQTXys0J2tYjlyt4rjj/pm225Qz8SJcNS3LInSRP7KWjWCFIdome/KB8EHXxLkZUhwuUPUw42VEkdPFGNY+Up1Wu48h4TCgNArgBCBEONqOyzmy9R3j4Ac/IrjKoMa+f1RTAOcFQYplRzoa9jWgS52UOd4QbAdVLxkqrwOZiWsIE3Og35/QrK/iWxlahTJqMp1GVO4XGAQWnM0ejT5ITtFWq0ng4ek5ucWxLnZ28zlGjXEbu20CwWPZXxNZzcxqvBIc8khjQDEkn3R0jylQ53aYnH6LYYirTbPsvaTq5hDh8FDj3BzQJ1sWnUb+ioOHtqtqOZTPeBIzNcQ3uzcHcbq/4TVdVP8AieyqObeSMjrb5hr6KLkl1REkZfHYgOdYQAoqVB7jZpP3zWm4twakSP4fLmuS0uufA6ShqVXK0TsII6onNxWECZU/y2p09V1WTsWdgks+/J9DsMbSkKJ7ICuX8NLPzfAhCPwFQnQeRCzxWTX45fRVtbNyulw0VgzAFzg1wLQd4t6pz+BVG1GNPuOc1ucXADiBJHmlVkNUVrSp6ZAXpmM/DvDOpZaLnNqTIe45pt7rhsPBZ6v+HmMa2QaTyNWtcQ7yzAAqpcM14IO7GdqqZfTwbxl7pFN17kGcp5Wm/Rbl1IbrL9h+BilSLn0iyuHODi5veibAE/liNOqu69Kt7VrmkGnGVzXGIN+808/2XZG4xVjjkc3heWqarSe8Ic3YkWDukD6dZhp8NALS8udkJcx2aHX1adiOv2Tszg6zhkjS+aZ22iFLIPXwR1RfZoTH27oyjcqSjExA8/ryUck/dgpKTNRMKkSKpR5JrWprmJjmlMRO0p2YIdoK6kwO4irZD4bnzMeQvPqWqHi2K9mxz8pdl2GvVPqY6kzJmcBn7tOx72/lJI9FD2WkyHD4UMfVfJc57s8n9N4YP9IzH4qc4ljXMbN3zlH+0SZ5R9QguH1KuZ5eQQHDIP8ATF58ST6IupTaHTa4sd41hTEHvIX7QqWlX2IQOdSUzIlaokLe1p0PqonkJvswd0PXoACZTEdrE7WT8OyBZCtEbSjaFQNaSWnwFyfBIDtehTqAZ2zGnMHmFgMawMz062Noue0kP7rKVQTcWawd6CO/fWwW4wuPz+80sMmGu1jYnkTyXlnbcGrjq3siAO611plwY0H6DyWc3FrBScosAx+Ghz30w3K1oADRAgW0F/M35qmLt7hWtPIymWvk1J1Mi3mq2u+4ABM6Ry6KKpGMnbHl0xHmoqtQCBsiG4Z5GgbG0yfgpcFw5hnMDPpboolNRVsSQG7BunWPU/ECElf06bWgAbWSXN/p/hdIPxPDao90kcss/wDSiq1q1Ozww9CAT55dPNG4PjVF7h3h5mw/srA5G6NBnlHqV6PRUOVp2mZ9uPYJzseJ3aSY8o/dTMDHA+zxOTcNqSJ3j7Ct62GY67225NP3KDr8Bpv9xrgSZjN3QOpiZU/HWkHyS+yR3aLidMN7zHtGndBkD9UX+q1HAu29Cq1oqn2NXQh0hk9Hm0eKxo7P4inei8+AO52AOu3NaHs5gKrx7TEtYS2zAWiTGrjsdIHmqTYkzcMeHEWtrM/JddTn7lVzMR1AH3oFPSrD9RHotCh1ShBSbQSfjmjUhw6appxTIkHySAeKZUuVVr+KH8vqb/CFC/HvP5vKB+yVjotTC44qoGLfPvQrE1nD3vUCCmmBLKHqVEqlUocvSYhYiu1rS5xAaLknQJr6lOqwOGV7QAWmJEk2cJ36pszredlW08SKDAyq8E1KhDA1sNa0DutsIGv3ChlpWsbLGge9HOyVPCNc8PJOdjS1onuiZm3O8Shy+IRjnQ6RvcIoVicu0nEIGjQrZxNQOaS5zrXv7rWybAao4NKadg1QS3mFwtUdNxGi6+o6C6dLxAi2yoklbh5URe4W/wCkQziIqAZhDgIn6JlVm/RGGADxOnlY+uc0sY50N3ytJyryeiypSa2rUI70vIJMyTMn5+a9vo4J5AjK4Ec/mCs72j/DajWaPZPNJ4MlxzVJ1tBcALxop+JLKQm28Hj2O4n7V85fBdZhHOOYuLf9vyW7pfhTXDh/iUiP1S6f+MfVWzvwyMWxF+tO3/6Wb4+RvAlSPNRhsv53HzTavECw+9PQ38lpu0f4f8QYD7JtOq3fIcr/AEd9CVUdo+w1bCMY99Vrg6xgEQ6Ji5vvfop+Jr9mBQOxtVxJBInkbJLjmPbb2jbJIx/CqNS7DNOo+AITalBzRaYjVhI+GitnUvBQvokaH7681p1M7AcLxCoPz6bOH1b+yNwvaEtJDhmJM90z8NT6IepSY6zxlP6hp58kLicA5txcc1FzWgNJwrirKrso94mbyCLSfgPgtHhcVmc6dAI/uvK21KrH5mvIPw8Fv+AHKLvaargJGYWGsDnf5LSE72Wi4qC8i64XErudw1DV1r+gVjGZCk5TiTsuCkkMgAK6Qn1HRogqta8BIZK9yvMI/wBpSANyBB68j5/RZ+zBmf6c+nh96alcMrObUDjqbOHQ/l8tfGEJ5BotSzugdEM5iOdE2028FG6mrJAzTI0QzxpMWNun7I6ohKqTQIgDu8j2CWST7u/RAYdkusJVhXwxyEA3tYAncHZRK6bRS3kdh4OhlGNpSoeG4UMu4948xHwVoxzQJkI4uzinJUwkkngAfRhAcQqw0Dmfl9j0VzXe06FBwJuB0tK0ZJXU6jSOqIp1T5IotEwcvohqgYDDmlvUaKUUo2XmDqQ1scvjuiWVQ63qN1SYStl3lpR7mT3mrRMhqgtuNbF+eh1XBjmZgCNdL/2VXXdvuh3mbJ2KgzjXH8NQIFWqymXaSbnnbkvKvxJ7VUsTT9jRBLGODvaGRJAPujlfUrK4yo01qhDi4B7mhxvIDiAZ8FDVhwIXLPnbdDSG4fhUtBL7kToElOyuYCS53Kf2Vg2TGzcLuTqYQtEFgA2CJFZp3H3tC6uOakjFMjq4Vp5nwlBPD6Xuglu4KtGPPNNrNLht8VdFFSaTKw7tnbtOqra9BzDHwVhjsE8EOEdCE2jjge7WHg4fVQ0nsC67PdoSGtZXMjRr5BPKHDXzK2NGqzmFgqGGObPLSNiRJmLAQQSPNXPBfbOBqVne9owNDQBOs6klEJ23H6NGkkjRVMTPghzV6qAlQYxz8h9mGl22aw6laMSyS4rGNbGZwEnKJOpMwJ8iomU3NcX+0OXcQPRp1hCewNSnlrhhg5nuEwLmI0MxbqheHgtaRVqF9NkkSIto0TPK0X8VmzRJL0s3Vp75G8MbzP8A2pcTUcxgynvE6+Blx+nmFX0GmvmeS5jR3WlpggiDboB80U1lgJJgQC4knzJToTNZh6oLQdiJHmmveFV8BxjSHUy4FzbxNwHTFtgSHehR2Oow0uBt96LQgirPGyFec1gg63EaTDD6rGk7Oc0H0JVjwannc58GAIHU2FumqAC6GHDGfElUg7RHPlawEEwCSQfFT9peJZW+yabn3ug5eJ+SzmC94u/SPiQfoHKJSrCGkaqhx6bOZ6HoDoeh5o2jxWi6e8GmY73d+Jt8Vkmvgu6E/wD1FOfhKfXHej9Qj+punrp5pKTG0bQn0UFVx2WSw+KcPdcR4Ej5Kxw3E6g/NPjf46q+wqLgUXHVTZDEOEjrdVtPizxqAfgi/wCYsImfKExW0FUqGUCGxvEkg2ReHeW323CrcLxlodlcCBzP3oraxFrg7hCLbvY/EUgRmboVScZaDQqjnTfP/EqxLi2Wg+Sqe0jHHDV47p9m7yt+0obM6PBqVgApw0nWwTK1N4OXKSfBdZhqxEZYC5OthZ0Nb+r4pJDgjvuUlXVfZPdHKHG8Q10l09CrjAcXDnS6A74eCQ4c1xc54AGwFj5olmGoNghjQRzifEkocPVgbkmW2GxDXmN/l18FLnOgdPoqCq+pEtp25gg/EKD+ZVBEsAjcuj5haqYLJpYncoTHcNa67TfxVT/NXC4uepsJ5CLrlbiFV1y6B4D9k3JMH/RrcRUpGDJaDpy8FquFccbUGUG7QCQdY8/vRYXFVD1PrJTKb3tcCMzSNDp8VEUou0h2eqMqzoU+i9jgTnbA1ggnyCzXZLjBeclSM40P6hGsc0RxCpSouENDS83cG9RrHjp0WreLHHOA/E4n2hyNGVjb30A3c7mVV4ioahyU2vLW3gRJ5vMn4I7FUMwbSpuAvLp0dzc4jSBspa2JpYakGMd36pyhxsXTq4chEwOV95WMOWPIvxZeY7DaLm5GtaMoA0MSPGLTuVT8Q46wS1gzEWnRvluVDxPH5iWsPd3PPp4fNVnswr7VhGbYzhHEKlLE+3EEmzxs5tpb00EcoC9NwmJp1WZm3a60HbmCNivNiA0WReD4jXpsLWPgOM2EnQCxOmg22TixJm69th8JTjuUmXs3uzubC7j6lUDu39Ik06THNzGA92UNnQGBe/XzWTxznuMuJcdySSfUqoewoch2bGq8mSZnUz13U+HbADdzlJ8ajgAP+AJ/qVRw7HF7CHXLQQfMWPwVpwp7nZHOMl1QmYjusaco8pjyU7LTCMO4EunQvqD1yqPC1nvac4bIIyxMyJImegI8VW1Dc9CSAZyz1AN0Zg6jg5wcAHXMAyAWnMBPkULY/AmiHRLouSRAtE2CIpOuhaWNpy6HCAb9DEkHqEVRc17c1NwcObSCPUKkiWGbJ1GrBUdF0iFxwgpiDK9AOacpv8vvks/he1dXCvLajSADB3b6q3p1oWS7QVs2Ie4E0zAFvzQNSQbg/QBJlJtGm7S8doVaLMSxxBachLT3m5pIuNpB9Vn8T2pfVouoOfTqB4DQ+7HtuCJizvQKmc135mgg7tOUne+Sx8wU04Fp2B6ESo7JPI+za0Qw4aPYehI/7U9Ko+2Zo/pI+SfS4XS3ZT/4tRDqVFjS7I2G7hot8EYIcovaIczfsFJQ1uMUsx/wweoaI+JSSI6xCcZjmkyJ+aEGd8wwk+vyVzT4dSpNkvh0TDhAGupPzQ9TiFIZXZYcN2SAfl6hNr7GnXhXVMO8HvAt6Rv4KbCYFpDi50RJggajzSx3GalQiSO7YE3MbCd0HUzP1k+pSwJyYSBTB5+HLz3XeIV8+TK0NDRFt9bn72TMPSM3F9+fx3T6eFe9wYIm/IC3Up5ErYN7AAKCqQNOimq0y0wVH7HMCZgj90VkegdmKfTqMqDVpDo0kbjwIkK/x/aig6ILtN2m3QwNVmqridTpYKF7B0VX4NFrU7UEPJDM/LOSBOs5RqLCxTeFuq4iqcRXeXZZy8pOsDkP25KopUZIA1NlrsFhgxoaDoNeupPqpjFRVRRfZvZKutjdI8kxx2HmgGPkHQeH7pznJjLBNk/2QSkKqUE+nuiXlQVSPAbnYDcnwElDKO4UZWOP6ren2fRabhogM/00583lh/8ANYD+YF1VpE5PdaOQ5nrutVQxlTMHE+83KGRHea5oEmf9I2tCV0V1rYqhknrKJq1ctZr9iGO8i0T9UGCbmIIJBEzeb3gWRGNcC2kZElpbrGjjHzCtMj0G4mSzM0ahxA8Nj8lRcWa+mRWpPc11g9zSWk8nGNb29Fo+JlrmNeSLth0katgT5jKqOvgCWkB0g+fmDuna0PKyG8F7aH3cSJ/+Roh39TRZ3iIPQrc4es2o0OaQ4ESCLgjoV4nUw9RpIymxj0Vp2d7SVMK6CC6kfeZMQf1N5O+B+IEN14eslp2Cz/GcSw1MhjMAJ+ceMH4qr4921Hs2fwzwS6ZJHfYANxsZO8iyx7uKvmS4kkySSSZ3upmm1SNOKk7Zszg5u18HaJCQpP8AztzjpA33+KzbOPHVWOC7RgWM/uFFYybOpB1RrDILSJtBt8UJSwj8Oc7BnpOs5upjn1Vizi1GoIP7FTtwjDZlQib5TEHyU9SZccWUT+CNcZY8BpuBy6LquHcKfP5fVdTox+B/ZX0MO+o79R2mPQTYKT+XyYecswBPM6X9VtMQ+mx2f2QBIy2ghvWCPjsqLHik8d096RMTFum60XF62Ny8oqncL9m0OdeSQJj8saeql4a4CsyBcEwNLwYnpKVfirvcexvdkDwJ1A0XMPXzEuAA8YCvqkSs4CsZULnkGLTcXI5T0QLpDmltyDfkYvoo6mLaLB0c/seabVxZIkAREa35T4pWjVQok4pUD3ZzdxMkzM8/mhK1PI0O3Ivyjkha3E2MOx5oE8UfUs1k/fNDM+qQS1zSS4WB0+v0QWMcAYBBRtDhVV5l9QN6Nv8AHZEv4bRpwCJnUm59Vk5JOyZThVIG4FQv7Q32HTmfvqtI2IkuHgs+5oEsbo1xA1IibTz5qWjU29BAt9wqSezSKjRaVK45z8PmVFSqb3v981HiasgCIO5n5pvs3TDdh47DqqWhOATUfaToomVwTCGqF2hO6HeY6pIp8ZZ1HRrf7+/RU/Ha7gyB+Yif9ouPUwfIc1L/ABoyXvHxOzfD6BVdXEktLXGZM+evkpt2ZTXV0hmDxIcA12sgA+Nlsa1aTSd5+jyPovPpgrUcKxxgCoAQJIkaSZI8J+ankXX8kVFWXmNGWq8f6ifW/wBVEXBwEwYMifvoEI/irarnOvExMWMCJB8kz+KGoIPyVp2ZelgHWg6ckyq7kq+jxBswfVSYmu3KTOm06p2KyqxBkkjdCvpOdrCsq1EuhzYiNv7IV8jUKOv0KwX+WA6uhQ1+Hxo6fFGgg8wjMBXDZBph889Qmu15Y+xnX0HDUHyuuMqkaK6rumTEHYjkh3tDveAJ+91fZPBSmV7a5R+G4m8R3jZCVcONpCgghOkzSPIalvaR0au+aSy2ZdRRfyG74lWcZlx1O56KrwrjI8CkktDIdWNx97KGq86yUkllI0iA5je5RWHccuu/0SSSRRTME1DN9dVYcPKSSXJoxZfcP0K7ih3x4JJLn8OYr/8A3T98kdHePiUklv8AR6HF+pypqERhWgsqEgEgW6JJK0L0HeO6PP5qoxFgY5pJKVs0eiorkyPAKR57qSSo5XsGqbq/xA/w3f7fokklPwuPpysIoWtdDN0SSWaOdnEXRSSQSyekYNrJYlJJOAMqmm58T81LTK6kqZcg2q0FhlVjtEkkmSMqoV+qSSuJURhSSSTGf//Z", videoUrl: "https://www.youtube.com/results?search_query=玉山杜鵑+紀錄片" },
+            { id: "thistle", name: "玉山薊", status: "一般野生", typeTag: "草本", region: "high", scientific: "Cirsium taiwanense", habitat: "高海拔冷杉林緣與開闊草生地", features: "悄然鐫刻於千元新台幣紙鈔上的隱秘靈草。全株武裝著剛硬銳利的尖刺以禦嚴寒與野獸，花序垂首開出深邃的暗紫，散發出島嶼脊樑特有的冷冽野性。", image: "https://images.chinatimes.com/newsphoto/2018-10-29/656/20181029003207.jpg", videoUrl: "https://www.youtube.com/results?search_query=玉山薊+紀錄片" },
+            { id: "hayata", name: "台灣杉", status: "珍貴稀有", typeTag: "喬木", region: "mid", scientific: "Taiwania cryptomerioides", habitat: "中高海拔混合林深處", features: "全球唯一以「台灣」作為屬名的孑遺針葉樹。木理如雲似霞，樹幹挺拔筆直衝雲霄，動輒高達七十公尺，被原住民敬畏地稱為「撞到月亮的樹」。", image: "https://upload.wikimedia.org/wikipedia/commons/9/9b/Taiwania_cryptomerioides3.jpg", videoUrl: "https://www.youtube.com/results?search_query=台灣杉+撞到月亮的樹" },
+            { id: "lily", name: "台灣百合", status: "一般野生", typeTag: "草本", region: "low", scientific: "Lilium formosanum", habitat: "全島從垂直海岬到高山峭壁", features: "最能代表海島草根韌性的原生花卉。純白碩大的喇叭狀花瓣背面，鐫刻著紫紅色的高雅條紋。從劇烈海風的鹹水岩壁到寒冷高山，皆能綻放出強悍而純潔的生命力。", image: "https://upload.wikimedia.org/wikipedia/commons/6/6b/Lilium_formosanum_sphl.jpg", videoUrl: "https://www.youtube.com/results?search_query=台灣百合+紀錄片" },
+            { id: "pleione", name: "新竹石斛", status: "瀕臨絕種", typeTag: "草本", region: "low", scientific: "Dendrobium somae", habitat: "低海拔極為陰濕的闊葉老樹高枝", features: "神祕附生於原始密林巨木高處的稀世幽蘭。花姿玲瓏剔透，現出淡雅的黃綠光澤。因對森林鬱閉度與濕度有著近乎苛求的依賴，在野外已如鳳毛麟角。", image: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhIEe4uLPFj-DgXc14NUba40h0SAoWAUlRkIu_l1ZVvf-qdJXVY0hokCBBP_DVQKyPGPcbzRNISBO7BWu2_Nxo22343iCQSE_Nqh-xiwCL6SATSNi83UTnggDu8iEtYU5zahAtvTKUrAD4/s1600/37126283.jpg", videoUrl: "https://www.youtube.com/results?search_query=台灣野生石斛蘭" },
+            { id: "cowania", name: "台灣青楓", status: "一般野生", typeTag: "喬木", region: "low", scientific: "Acer serrulatum", habitat: "全島中低海拔山區林中", features: "秋染 Formosa 山谷的華麗主角。掌狀五裂的精緻葉片，在每年深秋東北季風催逼下，會極具張力地蛻變為璀璨奪目的鮮紅，是島嶼秋季不可多得的視覺盛宴。", image: "https://theme.forest.gov.tw/forestplant/pic/43/43_2020121209435802696hm2d.jpg", videoUrl: "https://www.youtube.com/results?search_query=台灣青楓+賞楓" },
+            { id: "fern", name: "台灣原始觀音座蓮", status: "珍貴稀有", typeTag: "蕨類", region: "low", scientific: "Archangiopteris itoi", habitat: "僅存於台灣中部極少數極度陰濕之谷地", features: "極度古老的大型真蕨生物。全球僅奇蹟般地殘存於南投幾處幽暗、近乎與世隔絕的溪谷中。巨大的羽狀複葉基部堆疊如蓮花法座，是無可替代的演化瑰寶。", image: "https://jalife.cafe/wp-content/uploads/2017/04/%E5%8F%B0%E7%81%A3%E5%8E%9F%E5%A7%8B%E8%A7%80%E9%9F%B3%E5%BA%A7%E8%93%AEDSC_0761.jpg", videoUrl: "https://www.youtube.com/results?search_query=原始觀音座蓮+蕨類" }
+        ];
+
+        let currentRegion = 'all';
+
+        function renderPlants(filteredList) {
+            const container = document.getElementById('plant-list-container');
+            container.innerHTML = '';
+            if(filteredList.length === 0) {
+                container.innerHTML = `<div class="p-5 text-center text-white-50">沒有符合篩選條件的植物數據。</div>`;
+                return;
+            }
+            filteredList.forEach(plant => {
+                container.innerHTML += `
+                    <section id="${plant.id}" class="plant-section">
+                        <div class="row align-items-center g-5">
+                            <div class="col-lg-5"><div class="img-container"><img src="${plant.image}" class="plant-img" alt="${plant.name}"></div></div>
+                            <div class="col-lg-7">
+                                <div><span class="status-badge">${plant.status}</span></div>
+                                <h2 class="fw-bold m-0"><a href="${plant.videoUrl}" target="_blank" class="plant-title-link" title="觀看紀錄片">${plant.name} <span class="video-hint">DOCUMENTARY ↗</span></a></h2>
+                                <div class="scientific-name">${plant.scientific}</div>
+                                <div class="meta-box"><span class="meta-label">HABITAT / 棲地環境</span><span class="text-white-50">${plant.habitat}</span></div>
+                                <p class="features-text">${plant.features}</p>
+                            </div>
+                        </div>
+                    </section>`;
+            });
+        }
+
+        function filterPlants() {
+            const checkedBoxes = Array.from(document.querySelectorAll('.filter-checkbox:checked')).map(cb => cb.value);
+            const statusFilters = checkedBoxes.filter(val => ["瀕臨絕種", "珍貴稀有", "一般野生"].includes(val));
+            const typeFilters = checkedBoxes.filter(val => ["喬木", "草本", "蕨類"].includes(val));
+            
+            const searchQuery = document.getElementById('keyword-search').value.toLowerCase().trim();
+
+            let result = plants;
+            if (currentRegion !== 'all') result = result.filter(p => p.region === currentRegion);
+            if (statusFilters.length > 0) result = result.filter(p => statusFilters.includes(p.status));
+            if (typeFilters.length > 0) result = result.filter(p => typeFilters.includes(p.typeTag));
+            
+            if (searchQuery !== '') {
+                result = result.filter(p => 
+                    p.name.toLowerCase().includes(searchQuery) || 
+                    p.scientific.toLowerCase().includes(searchQuery) || 
+                    p.habitat.toLowerCase().includes(searchQuery) || 
+                    p.features.toLowerCase().includes(searchQuery)
+                );
+            }
+
+            renderPlants(result);
+        }
+
+        function filterRegion(region, element) {
+            currentRegion = region;
+            document.querySelectorAll('.region-btn').forEach(btn => btn.classList.remove('active'));
+            element.classList.add('active');
+
+            const title = document.getElementById('panel-title');
+            const desc = document.getElementById('panel-desc');
+            const alertBox = document.getElementById('panel-alert');
+
+            if(region === 'all') {
+                title.innerText = "台灣特有植物分佈面板";
+                desc.innerText = "點選左側垂直海拔高度帶，系統將載入對應之植被垂直分佈數據與保育警示。";
+                alertBox.innerText = "📢 宣導：森林為全島之肺，入山請落實無痕山林，嚴禁任意採摘任何野生植物。";
+            } else if (region === 'high') {
+                title.innerText = "🏔️ 垂直帶：高山寒帶及高山頂稜線 (3000m+)";
+                desc.innerText = "強風、低溫與高輻射環境。此區植物多為低矮草本或具粗厚地被特性的強韌亞高山灌木。";
+                alertBox.innerText = "🚫 宣導：高山高寒生態系極其脆弱，請踩踏於步道內，避免破壞高山草本地被。";
+            } else if (region === 'mid') {
+                title.innerText = "🌲 垂直帶：盛行針葉林與盛行雲霧帶 (1500m - 2500m)";
+                desc.innerText = "終年雲霧繞，濕度極高。為台灣最著名的珍貴檜木林與臺灣杉巨木群分布核心區。";
+                alertBox.innerText = "🌲 宣導：檜木與針葉巨木群皆受國家法律嚴格保護，嚴禁攀爬或破壞樹皮。";
+            } else if (region === 'low') {
+                title.innerText = "🌿 垂直帶：低海拔溪谷與次生闊葉林林地";
+                desc.innerText = "環境潮濕陰暗，適宜古老附生蘭花與珍稀有尾蕨類附著生長之潮濕谷地環境。";
+                alertBox.innerText = "📢 宣導：此區鄰近人類活動範圍，請勿隨意野放外來種植物，避免造成原生種生態危機。";
+            }
+            filterPlants();
+        }
+
+        renderPlants(plants);
+    </script>
+</body>
+</html>
